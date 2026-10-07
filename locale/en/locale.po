@@ -1,0 +1,243 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2026-10-04T00:00:00+00:00\n"
+"PO-Revision-Date: 2026-10-04T00:00:00+00:00\n"
+"Language: \n"
+
+msgid "plugins.generic.referenceVerify.displayName"
+msgstr "ReferenceVerify"
+
+msgid "plugins.generic.referenceVerify.description"
+msgstr "Check the references of a submission file with ReferenceVerify (Kaynakça Doğrula) directly from the editorial workflow. The file is passed to ReferenceVerify as a short-lived, encrypted, single-use transfer; the check runs in the editor's browser and nothing is stored permanently."
+
+msgid "plugins.generic.referenceVerify.tab"
+msgstr "ReferenceVerify"
+
+msgid "plugins.generic.referenceVerify.tab.intro"
+msgstr "Choose a report for each Word/PDF file: Reference check (verifies the reference list), In-text citations (checks the citations in the text against the reference list and the cited sources) or Consolidated report (both together: every reference verified, citations and references cross-checked in both directions). The report opens in a new tab on ReferenceVerify; you need a ReferenceVerify account."
+
+msgid "plugins.generic.referenceVerify.tab.notConfigured"
+msgstr "The plugin key has not been entered yet. A journal manager can add it under Settings → Website → Plugins → ReferenceVerify → Settings."
+
+msgid "plugins.generic.referenceVerify.tab.unsupported"
+msgstr "This file type is not supported (Word, PDF or RTF is needed)."
+
+msgid "plugins.generic.referenceVerify.tab.noFiles"
+msgstr "This submission has no Word (.docx, .doc), PDF or RTF file yet."
+
+msgid "plugins.generic.referenceVerify.tab.file"
+msgstr "File"
+
+msgid "plugins.generic.referenceVerify.tab.stage"
+msgstr "Stage"
+
+msgid "plugins.generic.referenceVerify.tab.check"
+msgstr "Check with ReferenceVerify"
+
+msgid "plugins.generic.referenceVerify.tab.privacy"
+msgstr "The file is sent encrypted and kept for at most one hour; it is deleted as soon as it is opened. Each link can be used once."
+
+msgid "plugins.generic.referenceVerify.stage.submission"
+msgstr "Submission"
+
+msgid "plugins.generic.referenceVerify.stage.review"
+msgstr "Review"
+
+msgid "plugins.generic.referenceVerify.stage.copyedit"
+msgstr "Copyediting"
+
+msgid "plugins.generic.referenceVerify.stage.production"
+msgstr "Production"
+
+msgid "plugins.generic.referenceVerify.stage.other"
+msgstr "Other"
+
+msgid "plugins.generic.referenceVerify.settings.description"
+msgstr "Enter the plugin key provided by ReferenceVerify for your journal. The key is used only for transferring files from this OJS installation."
+
+msgid "plugins.generic.referenceVerify.settings.apiKey"
+msgstr "Plugin key"
+
+msgid "plugins.generic.referenceVerify.settings.apiKeyInvalid"
+msgstr "Enter a valid plugin key (it starts with rvojs_)."
+
+msgid "plugins.generic.referenceVerify.settings.tool"
+msgstr "Tool to open"
+
+msgid "plugins.generic.referenceVerify.settings.tool.bibliography"
+msgstr "Bibliography check (references against scholarly records)"
+
+msgid "plugins.generic.referenceVerify.settings.tool.citation"
+msgstr "Citation Check (do the sources support the claims?)"
+
+msgid "plugins.generic.referenceVerify.settings.baseUrl"
+msgstr "Server address (optional)"
+
+msgid "plugins.generic.referenceVerify.settings.baseUrlDescription"
+msgstr "Leave empty. Only for testing with a different ReferenceVerify server, e.g. http://localhost:3200"
+
+msgid "plugins.generic.referenceVerify.settings.baseUrlInvalid"
+msgstr "Enter an address like https://example.com (no path)."
+
+msgid "plugins.generic.referenceVerify.settings.invalid"
+msgstr "Invalid value."
+
+msgid "plugins.generic.referenceVerify.error.request"
+msgstr "The request could not be verified. Go back to the submission and try again."
+
+msgid "plugins.generic.referenceVerify.error.file"
+msgstr "The file could not be found in this submission."
+
+msgid "plugins.generic.referenceVerify.error.notConfigured"
+msgstr "The plugin key has not been entered. Ask your journal manager to configure the ReferenceVerify plugin."
+
+msgid "plugins.generic.referenceVerify.error.key"
+msgstr "ReferenceVerify did not accept the plugin key. Check the key in the plugin settings."
+
+msgid "plugins.generic.referenceVerify.error.revoked"
+msgstr "This plugin key has been revoked. Contact ReferenceVerify for a new key."
+
+msgid "plugins.generic.referenceVerify.error.tooLarge"
+msgstr "The file is larger than ReferenceVerify accepts (50 MB)."
+
+msgid "plugins.generic.referenceVerify.error.type"
+msgstr "Only Word (.docx, .doc), PDF and RTF files can be checked."
+
+msgid "plugins.generic.referenceVerify.error.rate"
+msgstr "Too many transfers in a short time. Please try again later."
+
+msgid "plugins.generic.referenceVerify.error.transfer"
+msgstr "The file could not be sent to ReferenceVerify. Please try again; if it keeps failing, download the file and upload it on ReferenceVerify."
+
+msgid "plugins.generic.referenceVerify.error.close"
+msgstr "Close this tab"
+
+msgid "plugins.generic.referenceVerify.error.connection"
+msgstr "ReferenceVerify could not be reached. Please try again shortly."
+
+msgid "plugins.generic.referenceVerify.back"
+msgstr "Back to the submission"
+
+msgid "plugins.generic.referenceVerify.tab.results"
+msgstr "Report summaries"
+
+msgid "plugins.generic.referenceVerify.tab.resultsHelp"
+msgstr "If you clicked “Send summary to OJS” below a report on ReferenceVerify, the summary is added here to this submission as a discussion among the editors. A report you chose to “Share with the author” is added as a discussion that also includes the authors."
+
+msgid "plugins.generic.referenceVerify.tab.pull"
+msgstr "Get results"
+
+msgid "plugins.generic.referenceVerify.tab.reviewers"
+msgstr "Reviewer suggestions"
+
+msgid "plugins.generic.referenceVerify.tab.reviewersHelp"
+msgstr "Searches for researchers who have published on the submission's topic, using its title, abstract and author names, and lists them with ORCID, institution and conflict-of-interest flags. Requires a ReferenceVerify account with editor tools."
+
+msgid "plugins.generic.referenceVerify.tab.reviewersButton"
+msgstr "Show reviewer suggestions"
+
+msgid "plugins.generic.referenceVerify.pull.done"
+msgstr "Summaries added to this submission as discussions: {$count}. You can find them in the submission's discussions."
+
+msgid "plugins.generic.referenceVerify.pull.none"
+msgstr "No summary has been sent for this submission. On ReferenceVerify, click “Send summary to OJS” when the report is finished, then click “Get results” here again. Sent summaries are kept for 7 days."
+
+msgid "plugins.generic.referenceVerify.reviewers.title"
+msgstr "Reviewer suggestions"
+
+msgid "plugins.generic.referenceVerify.reviewers.intro"
+msgstr "Candidates are researchers who have recently published on the submission's topic. Candidates with a conflict-of-interest flag are listed last."
+
+msgid "plugins.generic.referenceVerify.reviewers.broad"
+msgstr "The topic is very general, so the list is broad; a more specific title or abstract gives better results."
+
+msgid "plugins.generic.referenceVerify.reviewers.none"
+msgstr "No candidates were found for this topic."
+
+msgid "plugins.generic.referenceVerify.reviewers.name"
+msgstr "Candidate"
+
+msgid "plugins.generic.referenceVerify.reviewers.institution"
+msgstr "Institution"
+
+msgid "plugins.generic.referenceVerify.reviewers.topicWorks"
+msgstr "Works on topic"
+
+msgid "plugins.generic.referenceVerify.reviewers.lastYear"
+msgstr "Latest work"
+
+msgid "plugins.generic.referenceVerify.reviewers.sample"
+msgstr "Sample work"
+
+msgid "plugins.generic.referenceVerify.reviewers.flag.coauthor"
+msgstr "Co-authored with an author"
+
+msgid "plugins.generic.referenceVerify.reviewers.flag.sameInstitution"
+msgstr "Same institution as an author"
+
+msgid "plugins.generic.referenceVerify.reviewers.flag.retracted"
+msgstr "Retracted work"
+
+msgid "plugins.generic.referenceVerify.reviewers.note"
+msgstr "Suggestions only; nobody is assigned automatically. Conflict flags are based on name and institution matching — verify before assigning."
+
+msgid "plugins.generic.referenceVerify.reviewers.error.notEditor"
+msgstr "The ReferenceVerify account linked to this plugin key does not have editor tools. Contact ReferenceVerify to enable reviewer suggestions."
+
+msgid "plugins.generic.referenceVerify.reviewers.error.rate"
+msgstr "The hourly reviewer-search limit for this journal has been reached. Please try again later."
+
+msgid "plugins.generic.referenceVerify.reviewers.error.short"
+msgstr "The submission has no title or abstract; at least one is needed to search for reviewers."
+
+msgid "plugins.generic.referenceVerify.reviewers.error.fetch"
+msgstr "Reviewer search is not available right now. Please try again shortly."
+
+msgid "plugins.generic.referenceVerify.tab.pendingBanner"
+msgstr "{$count} report summary(ies) waiting. Click \"Get results\" to add them to the submission's discussions."
+
+msgid "plugins.generic.referenceVerify.tab.pendingFile"
+msgstr "Summary waiting"
+
+msgid "plugins.generic.referenceVerify.tab.autoWritten"
+msgstr "{$count} report summary(ies) were added to the discussions automatically."
+
+msgid "plugins.generic.referenceVerify.settings.autoPullTitle"
+msgstr "Waiting summaries"
+
+msgid "plugins.generic.referenceVerify.settings.autoPull"
+msgstr "Add waiting summaries to the discussions automatically when the ReferenceVerify tab is opened (when off, the tab shows a notice and \"Get results\" adds them)"
+
+msgid "plugins.generic.referenceVerify.tab.checkBib"
+msgstr "Reference check"
+
+msgid "plugins.generic.referenceVerify.tab.checkCite"
+msgstr "In-text citations"
+
+msgid "plugins.generic.referenceVerify.tab.checkFull"
+msgstr "Consolidated report"
+
+msgid "plugins.generic.referenceVerify.tab.checkBibHelp"
+msgstr "Verifies every reference in the reference list (fabricated, mismatched, retracted)."
+
+msgid "plugins.generic.referenceVerify.tab.checkCiteHelp"
+msgstr "Checks in-text citations against the reference list and whether the cited sources support the claims."
+
+msgid "plugins.generic.referenceVerify.tab.checkFullHelp"
+msgstr "Every reference verified + in-text citations and the reference list cross-checked in both directions + citation claims."
+
+msgid "plugins.generic.referenceVerify.tab.loading"
+msgstr "Loading…"
+
+msgid "plugins.generic.referenceVerify.tab.loadError"
+msgstr "The ReferenceVerify panel could not be loaded. Reload the page and try again."
+
+msgid "plugins.generic.referenceVerify.tab.openDiscussions"
+msgstr "Show discussions"
