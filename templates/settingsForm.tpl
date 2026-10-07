@@ -1,7 +1,8 @@
 {**
  * plugins/generic/referenceVerify/templates/settingsForm.tpl
  *
- * Distributed under the GNU GPL v3.
+ * Copyright (c) 2026 Cüneyt Özdemir
+ * Distributed under the GNU GPL v3. For full terms see the file LICENSE.
  *
  * ReferenceVerify plugin settings.
  *}
@@ -20,13 +21,7 @@
 
 	{fbvFormArea id="referenceVerifySettingsArea"}
 		{fbvFormSection title="plugins.generic.referenceVerify.settings.apiKey" required=true}
-			{fbvElement type="text" id="apiKey" value=$apiKey size=$fbvStyles.size.LARGE}
-		{/fbvFormSection}
-		{fbvFormSection list=true title="plugins.generic.referenceVerify.settings.autoPullTitle"}
-			{fbvElement type="checkbox" id="autoPull" checked=$autoPull label="plugins.generic.referenceVerify.settings.autoPull"}
-		{/fbvFormSection}
-		{fbvFormSection title="plugins.generic.referenceVerify.settings.baseUrl" description="plugins.generic.referenceVerify.settings.baseUrlDescription"}
-			{fbvElement type="text" id="baseUrl" value=$baseUrl size=$fbvStyles.size.MEDIUM}
+			{fbvElement type="text" password=true id="apiKey" value=$apiKey size=$fbvStyles.size.LARGE}
 		{/fbvFormSection}
 	{/fbvFormArea}
 

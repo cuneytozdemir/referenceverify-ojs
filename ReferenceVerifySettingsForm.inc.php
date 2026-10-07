@@ -3,12 +3,14 @@
 /**
  * @file plugins/generic/referenceVerify/ReferenceVerifySettingsForm.inc.php
  *
- * Distributed under the GNU GPL v3.
+ * Copyright (c) 2026 Cüneyt Özdemir
+ * Distributed under the GNU GPL v3. For full terms see the file LICENSE.
  *
  * @class ReferenceVerifySettingsForm
  * @ingroup plugins_generic_referenceVerify
  *
- * @brief Journal manager settings: plugin key, site language, tool, optional base URL (testing).
+ * @brief Journal manager settings: the plugin key only. (1.2.1: the server address is no longer a journal setting —
+ *  see ReferenceVerifyPlugin::testServer() — and summaries are never written automatically.)
  */
 
 import('lib.pkp.classes.form.Form');
@@ -26,9 +28,6 @@ class ReferenceVerifySettingsForm extends Form {
 		$this->_plugin = $plugin;
 		parent::__construct($plugin->getTemplateResource('settingsForm.tpl'));
 		$this->addCheck(new FormValidatorRegExp($this, 'apiKey', 'required', 'plugins.generic.referenceVerify.settings.apiKeyInvalid', '/^rvojs_[A-Za-z0-9_-]{43}$/'));
-		$this->addCheck(new FormValidatorCustom($this, 'baseUrl', 'optional', 'plugins.generic.referenceVerify.settings.baseUrlInvalid', function ($v) {
-			return $v === '' || (bool) preg_match('~^https?://[^\s/?#]+(:\d+)?$~', $v);
-		}));
 		$this->addCheck(new FormValidatorPost($this));
 		$this->addCheck(new FormValidatorCSRF($this));
 	}
@@ -36,15 +35,12 @@ class ReferenceVerifySettingsForm extends Form {
 	function initData() {
 		$this->_data = [
 			'apiKey' => $this->_plugin->getSetting($this->_contextId, 'apiKey'),
-			'baseUrl' => $this->_plugin->getSetting($this->_contextId, 'baseUrl') ?: '',
-			'autoPull' => $this->_plugin->getSetting($this->_contextId, 'autoPull') ? true : false,
 		];
 	}
 
 	function readInputData() {
-		$this->readUserVars(['apiKey', 'baseUrl', 'autoPull']);
+		$this->readUserVars(['apiKey']);
 		$this->setData('apiKey', trim((string) $this->getData('apiKey')));
-		$this->setData('baseUrl', rtrim(trim((string) $this->getData('baseUrl')), '/'));
 	}
 
 	function fetch($request, $template = null, $display = false) {
@@ -54,11 +50,7 @@ class ReferenceVerifySettingsForm extends Form {
 	}
 
 	function execute(...$functionArgs) {
-		foreach (['apiKey', 'baseUrl'] as $k) {
-			$this->_plugin->updateSetting($this->_contextId, $k, (string) $this->getData($k), 'string');
-		}
-		// 1.1.1: write waiting summaries automatically when the workflow tab opens (off by default).
-		$this->_plugin->updateSetting($this->_contextId, 'autoPull', $this->getData('autoPull') ? 1 : 0, 'bool');
+		$this->_plugin->updateSetting($this->_contextId, 'apiKey', (string) $this->getData('apiKey'), 'string');
 		parent::execute(...$functionArgs);
 	}
 }

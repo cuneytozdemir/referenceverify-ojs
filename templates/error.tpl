@@ -1,7 +1,8 @@
 {**
  * plugins/generic/referenceVerify/templates/error.tpl
  *
- * Distributed under the GNU GPL v3.
+ * Copyright (c) 2026 Cüneyt Özdemir
+ * Distributed under the GNU GPL v3. For full terms see the file LICENSE.
  *
  * Transfer error page.
  *}

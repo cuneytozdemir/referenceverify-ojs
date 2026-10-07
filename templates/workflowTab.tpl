@@ -1,25 +1,16 @@
 {**
  * plugins/generic/referenceVerify/templates/workflowTab.tpl
  *
- * Distributed under the GNU GPL v3.
+ * Copyright (c) 2026 Cüneyt Özdemir
+ * Distributed under the GNU GPL v3. For full terms see the file LICENSE.
  *
  * Workflow tab: one "Check with ReferenceVerify" button per Word/PDF submission file (editors only).
- * Rendered inside the Vue <tabs> of the workflow page — plain HTML only.
+ * Rendered inside the Vue <tabs> of the workflow page — plain HTML only; v-pre keeps Vue from compiling any
+ * {{ }} that might appear in a file name. Translations used in attributes are escaped in PHP (rvLabels).
  *}
-<tab id="referenceVerify" label="{translate key="plugins.generic.referenceVerify.tab"}{if $rvPendingCount} ({$rvPendingCount}){/if}">
-	<div class="pkp_referenceVerify" style="padding:1rem 1.25rem;max-width:56rem">
+<tab id="referenceVerify" label="{$rvLabels.tab|escape}">
+	<div class="pkp_referenceVerify" v-pre style="padding:1rem 1.25rem;max-width:56rem">
 		<p style="margin:0 0 1rem">{translate key="plugins.generic.referenceVerify.tab.intro"}</p>
-		{if $rvAutoWritten}
-			<p role="status" style="margin:0 0 1rem;padding:.6rem .8rem;border-left:4px solid #00b28d;background:#f0faf7">{translate key="plugins.generic.referenceVerify.tab.autoWritten" count=$rvAutoWritten}</p>
-		{/if}
-		{if $rvPendingCount}
-			<form method="post" action="{$rvPullUrl|escape}" role="status" style="margin:0 0 1rem;padding:.6rem .8rem;border-left:4px solid #d08a00;background:#fff8ec;display:flex;flex-wrap:wrap;align-items:center;gap:.75rem">
-				{csrf}
-				<input type="hidden" name="submissionId" value="{$rvSubmissionId|escape}">
-				<span style="flex:1 1 20rem;font-weight:700">{translate key="plugins.generic.referenceVerify.tab.pendingBanner" count=$rvPendingCount}</span>
-				<button type="submit" class="pkp_button pkpButton">{translate key="plugins.generic.referenceVerify.tab.pull"}</button>
-			</form>
-		{/if}
 		{if !$rvConfigured}
 			<p class="pkp_helpers_text_warn" style="font-weight:700">{translate key="plugins.generic.referenceVerify.tab.notConfigured"}</p>
 		{elseif !$rvFiles}
@@ -36,7 +27,7 @@
 				<tbody>
 					{foreach from=$rvFiles item=rvFile}
 						<tr style="border-top:1px solid #ddd">
-							<td style="padding:.5rem">{$rvFile.name|escape}{if $rvFile.pending} <span style="display:inline-block;margin-left:.4rem;padding:0 .45rem;border-radius:1rem;background:#fff1d6;color:#7a4b00;font-size:.75rem;font-weight:700">{translate key="plugins.generic.referenceVerify.tab.pendingFile"}</span>{/if}</td>
+							<td style="padding:.5rem">{$rvFile.name|escape}</td>
 							<td style="padding:.5rem">{$rvFile.stage|escape}</td>
 							<td style="padding:.5rem;text-align:right">
 								{if $rvFile.supported}
@@ -45,9 +36,9 @@
 										<input type="hidden" name="submissionId" value="{$rvSubmissionId|escape}">
 										<input type="hidden" name="submissionFileId" value="{$rvFile.id|escape}">
 										<span style="display:inline-flex;flex-wrap:wrap;gap:.4rem;justify-content:flex-end">
-											<button type="submit" name="tool" value="bib" class="pkp_button pkpButton" title="{translate key="plugins.generic.referenceVerify.tab.checkBibHelp"}">{translate key="plugins.generic.referenceVerify.tab.checkBib"}</button>
-											<button type="submit" name="tool" value="cite" class="pkp_button pkpButton" title="{translate key="plugins.generic.referenceVerify.tab.checkCiteHelp"}">{translate key="plugins.generic.referenceVerify.tab.checkCite"}</button>
-											<button type="submit" name="tool" value="full" class="pkp_button pkpButton" title="{translate key="plugins.generic.referenceVerify.tab.checkFullHelp"}">{translate key="plugins.generic.referenceVerify.tab.checkFull"}</button>
+											<button type="submit" name="tool" value="bib" class="pkp_button pkpButton" title="{$rvLabels.checkBibHelp|escape}">{$rvLabels.checkBib|escape}</button>
+											<button type="submit" name="tool" value="cite" class="pkp_button pkpButton" title="{$rvLabels.checkCiteHelp|escape}">{$rvLabels.checkCite|escape}</button>
+											<button type="submit" name="tool" value="full" class="pkp_button pkpButton" title="{$rvLabels.checkFullHelp|escape}">{$rvLabels.checkFull|escape}</button>
 										</span>
 									</form>
 								{else}

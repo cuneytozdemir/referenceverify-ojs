@@ -7,7 +7,8 @@
 /**
  * @file plugins/generic/referenceVerify/index.php
  *
- * Distributed under the GNU GPL v3.
+ * Copyright (c) 2026 Cüneyt Özdemir
+ * Distributed under the GNU GPL v3. For full terms see the file LICENSE.
  *
  * @ingroup plugins_generic_referenceVerify
  * @brief Wrapper for the ReferenceVerify plugin.

@@ -3,7 +3,8 @@
 /**
  * @file plugins/generic/referenceVerify/ReferenceVerifyHandler.inc.php
  *
- * Distributed under the GNU GPL v3.
+ * Copyright (c) 2026 Cüneyt Özdemir
+ * Distributed under the GNU GPL v3. For full terms see the file LICENSE.
  *
  * @class ReferenceVerifyHandler
  * @ingroup plugins_generic_referenceVerify
@@ -70,13 +71,16 @@ class ReferenceVerifyHandler extends Handler {
 
 		// Large files over slow links can take longer than the host's default 30 s limit (on Windows hosts network
 		// waiting counts towards it). Raise it for this request only; ignored where the host forbids it.
-		if (function_exists('set_time_limit')) @set_time_limit(300);
+		if (function_exists('set_time_limit')) set_time_limit(300);
 
 		// Copy the stored file (OJS 3.3 file service, Flysystem) to a temporary file as a STREAM: a 50 MB file is
 		// never held in PHP memory (hosts often allow 128 MB). The temporary file is deleted right after the transfer.
 		$fileService = Services::get('file');
 		$file = $fileService->get($sf->getData('fileId'));
 		if (!$file) return $this->fail($request, __('plugins.generic.referenceVerify.error.file'));
+		// 1.2.1: ReferenceVerify accepts up to 50 MB; larger files are refused here instead of being copied and sent.
+		$size = $fileService->fs->getSize($file->path);
+		if ($size !== false && $size > 50 * 1024 * 1024) return $this->fail($request, __('plugins.generic.referenceVerify.error.tooLarge'));
 		$name = (string) $sf->getLocalizedData('name');
 		$tmp = tempnam(sys_get_temp_dir(), 'rvojs');
 		$in = $fileService->fs->readStream($file->path);
@@ -85,7 +89,7 @@ class ReferenceVerifyHandler extends Handler {
 		if (is_resource($in)) fclose($in);
 		if (is_resource($out)) fclose($out);
 		if (!$copied) {
-			if ($tmp !== false) @unlink($tmp);
+			if ($tmp !== false && is_file($tmp)) unlink($tmp);
 			return $this->fail($request, __('plugins.generic.referenceVerify.error.file'));
 		}
 
@@ -108,7 +112,7 @@ class ReferenceVerifyHandler extends Handler {
 		$status = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
 		$curlError = curl_error($ch);
 		curl_close($ch);
-		@unlink($tmp);
+		if (is_file($tmp)) unlink($tmp);
 
 		$data = is_string($body) ? json_decode($body, true) : null;
 		if ($status !== 200 || !is_array($data) || empty($data['token'])) {
@@ -186,7 +190,7 @@ class ReferenceVerifyHandler extends Handler {
 		if (trim(strip_tags($title . ' ' . $abstract)) === '') {
 			return $this->fail($request, __('plugins.generic.referenceVerify.reviewers.error.short'));
 		}
-		if (function_exists('set_time_limit')) @set_time_limit(120);
+		if (function_exists('set_time_limit')) set_time_limit(120);
 		list($status, $data) = $this->callApi($apiBase . '/api/ojs/reviewers', $apiKey,
 			['title' => $title, 'abstract' => $abstract, 'authors' => $authors], 90);
 		if ($status !== 200 || !is_array($data) || !isset($data['candidates']) || !is_array($data['candidates'])) {

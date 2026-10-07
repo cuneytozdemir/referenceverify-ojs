@@ -3,7 +3,8 @@
 /**
  * @file plugins/generic/referenceVerify/ReferenceVerifyPlugin.inc.php
  *
- * Distributed under the GNU GPL v3.
+ * Copyright (c) 2026 Cüneyt Özdemir
+ * Distributed under the GNU GPL v3. For full terms see the file LICENSE.
  *
  * @class ReferenceVerifyPlugin
  * @ingroup plugins_generic_referenceVerify
@@ -51,12 +52,22 @@ class ReferenceVerifyPlugin extends GenericPlugin {
 		// Site language follows the OJS interface language of the editor at click time:
 		// Turkish OJS -> kaynakcadogrula.com, any other language -> referenceverify.com. No setting needed.
 		$lang = strpos((string) AppLocale::getLocale(), 'tr') === 0 ? 'tr' : 'en';
-		$custom = rtrim((string) $this->getSetting($contextId, 'baseUrl'), '/');
-		$base = $custom !== '' ? $custom : ($lang === 'en' ? 'https://referenceverify.com' : 'https://kaynakcadogrula.com');
+		$base = self::testServer() ?: ($lang === 'en' ? 'https://referenceverify.com' : 'https://kaynakcadogrula.com');
 		// referenceverify.com serves the English site at its root; any other host (e.g. a test server)
 		// serves it under /en.
 		$prefix = ($lang === 'en' && !preg_match('#^https?://(www\.)?referenceverify\.com$#i', $base)) ? '/en' : '';
 		return [$base, $base, $prefix, $lang];
+	}
+
+	/**
+	 * 1.2.1 — the server address can no longer be changed in the plugin settings (any journal manager could point
+	 * the plugin, and its key, at another host). For testing only, the site administrator can set it in
+	 * config.inc.php:  [referenceverify]  base_url = "https://test.example.org"
+	 * @return string Base URL without a trailing slash, or '' (use the ReferenceVerify sites).
+	 */
+	static function testServer() {
+		$url = rtrim(trim((string) Config::getVar('referenceverify', 'base_url')), '/');
+		return preg_match('~^https?://[^\s/?#]+(:\d+)?$~', $url) ? $url : '';
 	}
 
 	/** Can the current user send files from this submission? */
@@ -90,28 +101,14 @@ class ReferenceVerifyPlugin extends GenericPlugin {
 		}
 		$apiKey = trim((string) $this->getSetting($context->getId(), 'apiKey'));
 
-		// 1.1.1 — summaries the editor sent from ReferenceVerify but not yet written to OJS. One short request per
-		// workflow view (only counts, never content); if ReferenceVerify is slow or unreachable the tab simply
-		// shows no badge. With the "write automatically" setting they are written here as editor discussions.
-		$pendingFiles = [];
-		$autoWritten = 0;
-		if ($apiKey !== '') {
-			$pending = $this->pendingResults($context->getId(), $apiKey, (int) $submission->getId());
-			if ($pending && $pending['count'] > 0 && $this->getSetting($context->getId(), 'autoPull')) {
-				list($written, $errorKey) = $this->writeResults($request, $submission);
-				if ($errorKey === null && $written > 0) {
-					$autoWritten = $written;
-					$pending = $this->pendingResults($context->getId(), $apiKey, (int) $submission->getId());
-				}
-			}
-			if ($pending) $pendingFiles = $pending['files'];
+		// 1.2.1 — opening the workflow never contacts ReferenceVerify. Summaries the editor sent are fetched only
+		// when the editor clicks "Get results" (a CSRF-checked POST); nothing is written to OJS automatically.
+		$labels = [];
+		foreach (['tab', 'checkBib', 'checkBibHelp', 'checkCite', 'checkCiteHelp', 'checkFull', 'checkFullHelp'] as $k) {
+			$labels[$k] = __('plugins.generic.referenceVerify.' . ($k === 'tab' ? 'tab' : 'tab.' . $k));
 		}
-		$pendingByFile = array_count_values(array_map('intval', $pendingFiles));
-		foreach ($files as $i => $f) $files[$i]['pending'] = isset($pendingByFile[(int) $f['id']]) ? $pendingByFile[(int) $f['id']] : 0;
-
 		$templateMgr->assign([
-			'rvPendingCount' => count($pendingFiles),
-			'rvAutoWritten' => $autoWritten,
+			'rvLabels' => $labels,
 			'rvFiles' => $files,
 			'rvSubmissionId' => $submission->getId(),
 			'rvConfigured' => $apiKey !== '',
@@ -124,22 +121,9 @@ class ReferenceVerifyPlugin extends GenericPlugin {
 	}
 
 	/**
-	 * 1.1.1 — how many report summaries are waiting for this submission (sent from ReferenceVerify, not yet written
-	 * to OJS). Short timeouts: this runs while the workflow page renders. @return array|null ['count', 'files'[]]
-	 */
-	function pendingResults($contextId, $apiKey, $submissionId) {
-		list($apiBase) = $this->getEndpoints($contextId);
-		list($status, $data) = $this->callApi($apiBase . '/api/ojs/result/pending', $apiKey, ['submissionId' => (int) $submissionId], 4, 3);
-		if ($status !== 200 || !is_array($data) || !isset($data['files']) || !is_array($data['files'])) return null;
-		$files = [];
-		foreach ($data['files'] as $id) if ((int) $id > 0) $files[] = (int) $id;
-		return ['count' => count($files), 'files' => $files];
-	}
-
-	/**
 	 * Writes every summary sent for this submission as an OJS discussion between the editors, then confirms it to
 	 * ReferenceVerify, which deletes it. Participants: the current user and the editors assigned to the submission
-	 * (never its authors). Used by "Get results" and, when enabled, by the workflow tab (1.1.1).
+	 * (never its authors). Used only by "Get results".
 	 * @return array [int writtenCount, string|null errorLocaleKey]
 	 */
 	function writeResults($request, $submission) {
@@ -181,7 +165,7 @@ class ReferenceVerifyPlugin extends GenericPlugin {
 			$note->setAssocType(ASSOC_TYPE_QUERY);
 			$note->setAssocId($query->getId());
 			$note->setDateCreated(Core::getCurrentDate());
-			$note->setTitle(PKPString::substr((string) $r['subject'], 0, 255));
+			$note->setTitle(PKPString::substr(trim(strip_tags((string) $r['subject'])), 0, 255));
 			$note->setContents($this->textToHtml((string) $r['text']));
 			$noteDao->insertObject($note);
 
@@ -313,7 +297,6 @@ class ReferenceVerifyPlugin extends GenericPlugin {
 		switch ($fileStage) {
 			case SUBMISSION_FILE_SUBMISSION: return __('plugins.generic.referenceVerify.stage.submission');
 			case SUBMISSION_FILE_REVIEW_FILE:
-			case SUBMISSION_FILE_REVIEW_ATTACHMENT:
 			case SUBMISSION_FILE_REVIEW_REVISION: return __('plugins.generic.referenceVerify.stage.review');
 			case SUBMISSION_FILE_FINAL:
 			case SUBMISSION_FILE_COPYEDIT: return __('plugins.generic.referenceVerify.stage.copyedit');

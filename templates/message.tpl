@@ -1,7 +1,8 @@
 {**
  * plugins/generic/referenceVerify/templates/message.tpl
  *
- * Distributed under the GNU GPL v3.
+ * Copyright (c) 2026 Cüneyt Özdemir
+ * Distributed under the GNU GPL v3. For full terms see the file LICENSE.
  *
  * Outcome of "Get results" with a link back to the submission.
  *}

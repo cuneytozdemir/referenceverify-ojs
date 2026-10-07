@@ -1,7 +1,8 @@
 {**
  * plugins/generic/referenceVerify/templates/reviewers.tpl
  *
- * Distributed under the GNU GPL v3.
+ * Copyright (c) 2026 Cüneyt Özdemir
+ * Distributed under the GNU GPL v3. For full terms see the file LICENSE.
  *
  * Reviewer suggestions for one submission: candidates with ORCID, institution, topic works and
  * conflict-of-interest flags. Suggestions only — nobody is assigned automatically.
