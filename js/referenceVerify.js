@@ -1,7 +1,8 @@
 /**
  * @file plugins/generic/referenceVerify/js/referenceVerify.js
  *
- * Distributed under the GNU GPL v3.
+ * Copyright (c) 2026 Cüneyt Özdemir
+ * Distributed under the GNU GPL v3. For full terms see the file LICENSE.
  *
  * @brief OJS 3.5 workflow: adds a "ReferenceVerify" item to the submission's side menu (editorial dashboard only)
  *  through the supported extension point pkp.registry.storeExtend('workflow'). The item appears only when the server
@@ -57,13 +58,19 @@
 		});
 	}
 
-	function load(submissionId) {
+	// withPending: also ask ReferenceVerify how many report summaries are waiting. Only the opened panel does this
+	// (1.2.1); the request made when the workflow loads stays inside OJS and only decides whether the item is shown.
+	function load(submissionId, withPending) {
 		var e = entry(submissionId);
 		if (e.loading) {
-			return Promise.resolve();
+			// A plain load is running and the panel needs the waiting count: ask again once it has finished.
+			return withPending ? e.loading.then(function () { return load(submissionId, true); }) : e.loading;
 		}
-		e.loading = true;
-		return post(config().urls.status, {submissionId: submissionId})
+		var fields = {submissionId: submissionId};
+		if (withPending) {
+			fields.pending = '1';
+		}
+		e.loading = post(config().urls.status, fields)
 			.then(function (json) {
 				if (json && json.status && json.content) {
 					e.allowed = true;
@@ -82,8 +89,9 @@
 				e.error = t('tab.loadError');
 			})
 			.then(function () {
-				e.loading = false;
+				e.loading = null;
 			});
+		return e.loading;
 	}
 
 	// A form posted into a new tab (the check and the reviewer list open on their own pages).
@@ -113,6 +121,9 @@
 		},
 		data: function () {
 			return {pulling: false, pullMessage: '', pullError: '', pullWritten: 0};
+		},
+		mounted: function () {
+			load(this.submissionId, true);
 		},
 		computed: {
 			entry: function () {
@@ -149,7 +160,7 @@
 					})
 					.then(function () {
 						self.pulling = false;
-						return load(self.submissionId);
+						return load(self.submissionId, true);
 					});
 			},
 			// The stage page of the workflow, where the new discussions are listed.
@@ -177,7 +188,6 @@
 			'  <p v-if="entry.loading && !info" class="m-0 text-secondary" role="status">{{ t("tab.loading") }}</p>' +
 			'  <p v-if="entry.error" class="m-0 border-s-4 border-negative bg-tertiary px-3 py-2 text-negative" role="alert">{{ entry.error }}</p>' +
 			'  <template v-if="info">' +
-			'    <p v-if="info.autoWritten" class="m-0 border-s-4 border-success bg-tertiary px-3 py-2" role="status">{{ t("tab.autoWritten", info.autoWritten) }}</p>' +
 			'    <div v-if="info.pendingCount" class="flex flex-wrap items-center gap-3 border-s-4 border-attention bg-tertiary px-3 py-2" role="status">' +
 			'      <span class="flex-1 text-base-bold">{{ t("tab.pendingBanner", info.pendingCount) }}</span>' +
 			'      <PkpButton :is-primary="true" :is-disabled="pulling" @click="pull">{{ t("tab.pull") }}</PkpButton>' +

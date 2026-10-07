@@ -3,7 +3,8 @@
 /**
  * @file plugins/generic/referenceVerify/ReferenceVerifyHandler.php
  *
- * Distributed under the GNU GPL v3.
+ * Copyright (c) 2026 Cüneyt Özdemir
+ * Distributed under the GNU GPL v3. For full terms see the file LICENSE.
  *
  * @class ReferenceVerifyHandler
  *
@@ -61,7 +62,8 @@ class ReferenceVerifyHandler extends Handler
     }
 
     /**
-     * 3.5 workflow panel: files with their buttons and waiting summaries (writes them first with "autoPull").
+     * 3.5 workflow panel: files with their buttons. Waiting summaries are asked from ReferenceVerify only when the
+     * panel itself is opened (pending=1); the request made when the workflow loads stays inside OJS (1.2.1).
      */
     public function status($args, $request)
     {
@@ -69,7 +71,7 @@ class ReferenceVerifyHandler extends Handler
             return new JSONMessage(false, __('plugins.generic.referenceVerify.error.request'));
         }
         $submission = $this->submission();
-        $data = $this->plugin->workflowData($request, $submission);
+        $data = $this->plugin->workflowData($request, $submission, $request->getUserVar('pending') === '1');
         $data['submissionId'] = (int) $submission->getId();
         $data['stageId'] = (int) $submission->getData('stageId');
         return new JSONMessage(true, $data);
@@ -103,7 +105,7 @@ class ReferenceVerifyHandler extends Handler
         // Large files over slow links can take longer than the host's default 30 s limit (on Windows hosts network
         // waiting counts towards it). Raise it for this request only; ignored where the host forbids it.
         if (function_exists('set_time_limit')) {
-            @set_time_limit(300);
+            set_time_limit(300);
         }
 
         // Copy the stored file to a temporary file as a STREAM: a 50 MB file is never held in PHP memory. The
@@ -112,6 +114,15 @@ class ReferenceVerifyHandler extends Handler
         $file = $fileService->get($sf->getData('fileId'));
         if (!$file) {
             return $this->fail($request, __('plugins.generic.referenceVerify.error.file'));
+        }
+        // 1.2.1: ReferenceVerify accepts up to 50 MB; larger files are refused here instead of being copied and sent.
+        try {
+            $size = $fileService->fs->fileSize($file->path);
+        } catch (\Throwable $e) {
+            $size = 0;
+        }
+        if ($size > 50 * 1024 * 1024) {
+            return $this->fail($request, __('plugins.generic.referenceVerify.error.tooLarge'));
         }
         $name = (string) $sf->getLocalizedData('name');
         $tmp = tempnam(sys_get_temp_dir(), 'rvojs');
@@ -129,8 +140,8 @@ class ReferenceVerifyHandler extends Handler
             fclose($out);
         }
         if (!$copied) {
-            if ($tmp !== false) {
-                @unlink($tmp);
+            if ($tmp !== false && is_file($tmp)) {
+                unlink($tmp);
             }
             return $this->fail($request, __('plugins.generic.referenceVerify.error.file'));
         }
@@ -154,7 +165,9 @@ class ReferenceVerifyHandler extends Handler
         $status = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
         $curlError = curl_error($ch);
         curl_close($ch);
-        @unlink($tmp);
+        if (is_file($tmp)) {
+            unlink($tmp);
+        }
 
         $data = is_string($body) ? json_decode($body, true) : null;
         if ($status !== 200 || !is_array($data) || empty($data['token'])) {
@@ -238,7 +251,7 @@ class ReferenceVerifyHandler extends Handler
             return $this->fail($request, __('plugins.generic.referenceVerify.reviewers.error.short'));
         }
         if (function_exists('set_time_limit')) {
-            @set_time_limit(120);
+            set_time_limit(120);
         }
         [$status, $data] = $plugin->callApi(
             $apiBase . '/api/ojs/reviewers',

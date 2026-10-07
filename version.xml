@@ -4,13 +4,14 @@
   * plugins/generic/referenceVerify/version.xml
   *
   * ReferenceVerify / Kaynakça Doğrula — OJS 3.4 / 3.5 eklentisi.
-  * Distributed under the GNU GPL v3.
+  * Copyright (c) 2026 Cüneyt Özdemir
+  * Distributed under the GNU GPL v3. For full terms see the file LICENSE.
   -->
 <version>
 	<application>referenceVerify</application>
 	<type>plugins.generic</type>
-	<release>1.2.0.0</release>
-	<date>2026-10-06</date>
+	<release>1.2.1.1</release>
+	<date>2026-10-07</date>
 	<lazy-load>1</lazy-load>
 	<class>ReferenceVerifyPlugin</class>
 </version>

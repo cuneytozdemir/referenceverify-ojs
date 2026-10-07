@@ -9,13 +9,13 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "POT-Creation-Date: 2026-10-04T00:00:00+00:00\n"
 "PO-Revision-Date: 2026-10-04T00:00:00+00:00\n"
-"Language: \n"
+"Language: en\n"
 
 msgid "plugins.generic.referenceVerify.displayName"
 msgstr "ReferenceVerify"
 
 msgid "plugins.generic.referenceVerify.description"
-msgstr "Check the references of a submission file with ReferenceVerify (Kaynakça Doğrula) directly from the editorial workflow. The file is passed to ReferenceVerify as a short-lived, encrypted, single-use transfer; the check runs in the editor's browser and nothing is stored permanently."
+msgstr "Check the references and in-text citations of a submission file with ReferenceVerify from the editorial workflow. The plugin contacts ReferenceVerify only when an editor clicks one of its buttons: the chosen file is sent as an encrypted, single-use transfer (deleted when opened, at the latest after one hour); reviewer suggestions send the submission's title, abstract and author names; “Get results” sends the submission ID. Report summaries an editor sends back to OJS are kept for at most 7 days until retrieved. Requires a ReferenceVerify account and plugin key."
 
 msgid "plugins.generic.referenceVerify.tab"
 msgstr "ReferenceVerify"
@@ -38,9 +38,6 @@ msgstr "File"
 msgid "plugins.generic.referenceVerify.tab.stage"
 msgstr "Stage"
 
-msgid "plugins.generic.referenceVerify.tab.check"
-msgstr "Check with ReferenceVerify"
-
 msgid "plugins.generic.referenceVerify.tab.privacy"
 msgstr "The file is sent encrypted and kept for at most one hour; it is deleted as soon as it is opened. Each link can be used once."
 
@@ -60,31 +57,13 @@ msgid "plugins.generic.referenceVerify.stage.other"
 msgstr "Other"
 
 msgid "plugins.generic.referenceVerify.settings.description"
-msgstr "Enter the plugin key provided by ReferenceVerify for your journal. The key is used only for transferring files from this OJS installation."
+msgstr "Enter the plugin key ReferenceVerify issued for your journal. The plugin contacts ReferenceVerify only when an editor clicks a button in the ReferenceVerify panel: to transfer the chosen file, to get report summaries (submission ID only) or to suggest reviewers (title, abstract and author names). Nothing is sent when the workflow is opened."
 
 msgid "plugins.generic.referenceVerify.settings.apiKey"
 msgstr "Plugin key"
 
 msgid "plugins.generic.referenceVerify.settings.apiKeyInvalid"
 msgstr "Enter a valid plugin key (it starts with rvojs_)."
-
-msgid "plugins.generic.referenceVerify.settings.tool"
-msgstr "Tool to open"
-
-msgid "plugins.generic.referenceVerify.settings.tool.bibliography"
-msgstr "Bibliography check (references against scholarly records)"
-
-msgid "plugins.generic.referenceVerify.settings.tool.citation"
-msgstr "Citation Check (do the sources support the claims?)"
-
-msgid "plugins.generic.referenceVerify.settings.baseUrl"
-msgstr "Server address (optional)"
-
-msgid "plugins.generic.referenceVerify.settings.baseUrlDescription"
-msgstr "Leave empty. Only for testing with a different ReferenceVerify server, e.g. http://localhost:3200"
-
-msgid "plugins.generic.referenceVerify.settings.baseUrlInvalid"
-msgstr "Enter an address like https://example.com (no path)."
 
 msgid "plugins.generic.referenceVerify.settings.invalid"
 msgstr "Invalid value."
@@ -205,15 +184,6 @@ msgstr "{$count} report summary(ies) waiting. Click \"Get results\" to add them 
 
 msgid "plugins.generic.referenceVerify.tab.pendingFile"
 msgstr "Summary waiting"
-
-msgid "plugins.generic.referenceVerify.tab.autoWritten"
-msgstr "{$count} report summary(ies) were added to the discussions automatically."
-
-msgid "plugins.generic.referenceVerify.settings.autoPullTitle"
-msgstr "Waiting summaries"
-
-msgid "plugins.generic.referenceVerify.settings.autoPull"
-msgstr "Add waiting summaries to the discussions automatically when the ReferenceVerify tab is opened (when off, the tab shows a notice and \"Get results\" adds them)"
 
 msgid "plugins.generic.referenceVerify.tab.checkBib"
 msgstr "Reference check"

@@ -3,11 +3,12 @@
 /**
  * @file plugins/generic/referenceVerify/ReferenceVerifyPlugin.php
  *
- * Distributed under the GNU GPL v3.
+ * Copyright (c) 2026 Cüneyt Özdemir
+ * Distributed under the GNU GPL v3. For full terms see the file LICENSE.
  *
  * @class ReferenceVerifyPlugin
  *
- * @brief ReferenceVerify (Kaynakça Doğrula) for OJS 3.4 and 3.5.
+ * @brief ReferenceVerify for OJS 3.4 and 3.5.
  *
  *  For each Word/PDF manuscript file of a submission an editor can click "Check with ReferenceVerify": the file is
  *  handed over (server to server, HTTPS, journal plugin key) to ReferenceVerify as a short-lived, encrypted,
@@ -98,11 +99,24 @@ class ReferenceVerifyPlugin extends GenericPlugin
         // Site language follows the OJS interface language of the editor at click time:
         // Turkish OJS -> kaynakcadogrula.com, any other language -> referenceverify.com. No setting needed.
         $lang = str_starts_with((string) Locale::getLocale(), 'tr') ? 'tr' : 'en';
-        $custom = rtrim((string) $this->getSetting($contextId, 'baseUrl'), '/');
-        $base = $custom !== '' ? $custom : ($lang === 'en' ? 'https://referenceverify.com' : 'https://kaynakcadogrula.com');
+        $base = self::testServer() ?: ($lang === 'en' ? 'https://referenceverify.com' : 'https://kaynakcadogrula.com');
         // referenceverify.com serves the English site at its root; any other host (e.g. a test server) under /en.
         $prefix = ($lang === 'en' && !preg_match('#^https?://(www\.)?referenceverify\.com$#i', $base)) ? '/en' : '';
         return [$base, $base, $prefix, $lang];
+    }
+
+    /**
+     * 1.2.1 — the server address can no longer be changed in the plugin settings (any journal manager could point the
+     * plugin, and its key, at another host). For testing only, the site administrator can set it in config.inc.php:
+     *   [referenceverify]
+     *   base_url = "https://test.example.org"
+     *
+     * @return string Base URL without a trailing slash, or '' (use the ReferenceVerify sites).
+     */
+    public static function testServer(): string
+    {
+        $url = rtrim(trim((string) Config::getVar('referenceverify', 'base_url')), '/');
+        return preg_match('~^https?://[^\s/?#]+(:\d+)?$~', $url) ? $url : '';
     }
 
     /** bib | cite | full; anything else falls back to bib (as in the OJS 3.3 plugin). */
@@ -204,17 +218,19 @@ class ReferenceVerifyPlugin extends GenericPlugin
             $strings[$k] = __('plugins.generic.referenceVerify.' . $k);
         }
         // Messages with a count: {$count} is replaced in the browser.
-        foreach (['tab.pendingBanner', 'tab.autoWritten', 'pull.done'] as $k) {
+        foreach (['tab.pendingBanner', 'pull.done'] as $k) {
             $strings[$k] = __('plugins.generic.referenceVerify.' . $k, ['count' => '{$count}']);
         }
         return $strings;
     }
 
     /**
-     * Everything the workflow UI shows for one submission: files with their buttons, waiting summaries (and, with the
-     * "write automatically" setting, writes them first). Shared by the 3.5 status endpoint and the 3.4 tab.
+     * Everything the workflow UI shows for one submission: files with their buttons and, only when $withPending is
+     * true (the editor opened the 3.5 panel), how many report summaries are waiting on ReferenceVerify. 1.2.1: loading
+     * the workflow never contacts ReferenceVerify and nothing is written to OJS automatically. Shared by the 3.5
+     * status endpoint and the 3.4 tab (which never asks for waiting summaries).
      */
-    public function workflowData($request, $submission): array
+    public function workflowData($request, $submission, bool $withPending = false): array
     {
         $context = $request->getContext();
         $contextId = $context->getId();
@@ -237,20 +253,12 @@ class ReferenceVerifyPlugin extends GenericPlugin
         }
         $apiKey = trim((string) $this->getSetting($contextId, 'apiKey'));
 
-        // Summaries the editor sent from ReferenceVerify but not yet written to OJS. One short request (only counts,
-        // never content); if ReferenceVerify is slow or unreachable no badge is shown. With the "write automatically"
-        // setting they are written here as discussions.
+        // Summaries the editor sent from ReferenceVerify but not yet written to OJS: one short request (only counts,
+        // never content), made only when the editor opens the panel. If ReferenceVerify is slow or unreachable no
+        // badge is shown. They are written to OJS only by "Get results".
         $pendingFiles = [];
-        $autoWritten = 0;
-        if ($apiKey !== '') {
+        if ($withPending && $apiKey !== '') {
             $pending = $this->pendingResults($contextId, $apiKey, (int) $submission->getId());
-            if ($pending && $pending['count'] > 0 && $this->getSetting($contextId, 'autoPull')) {
-                [$written, $errorKey] = $this->writeResults($request, $submission);
-                if ($errorKey === null && $written > 0) {
-                    $autoWritten = $written;
-                    $pending = $this->pendingResults($contextId, $apiKey, (int) $submission->getId());
-                }
-            }
             if ($pending) {
                 $pendingFiles = $pending['files'];
             }
@@ -264,7 +272,7 @@ class ReferenceVerifyPlugin extends GenericPlugin
             'files' => $files,
             'tools' => $this->toolButtons(),
             'pendingCount' => count($pendingFiles),
-            'autoWritten' => $autoWritten,
+            'pendingChecked' => $withPending && $apiKey !== '',
         ];
     }
 
@@ -284,8 +292,7 @@ class ReferenceVerifyPlugin extends GenericPlugin
         $data = $this->workflowData($request, $submission);
         $dispatcher = $request->getDispatcher();
         $templateMgr->assign([
-            'rvPendingCount' => $data['pendingCount'],
-            'rvAutoWritten' => $data['autoWritten'],
+            'rvTabLabel' => __('plugins.generic.referenceVerify.tab'),
             'rvFiles' => $data['files'],
             'rvTools' => $data['tools'],
             'rvSubmissionId' => $submission->getId(),
@@ -349,7 +356,7 @@ class ReferenceVerifyPlugin extends GenericPlugin
             }
             $withAuthors = ($r['audience'] ?? '') === 'author';
             $participants = $this->participants((int) $submission->getId(), (int) $user->getId(), $withAuthors);
-            $title = mb_substr((string) $r['subject'], 0, 255);
+            $title = mb_substr(trim(strip_tags((string) $r['subject'])), 0, 255);
             $html = $this->textToHtml((string) $r['text']);
             $queries = self::isOjs35() ? Repo::query() : DAORegistry::getDAO('QueryDAO');
             $queries->addQuery((int) $submission->getId(), $stageId, $title, $html, $user, $participants, (int) $context->getId(), false);

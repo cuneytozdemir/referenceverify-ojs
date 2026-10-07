@@ -9,13 +9,13 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "POT-Creation-Date: 2026-10-04T00:00:00+00:00\n"
 "PO-Revision-Date: 2026-10-04T00:00:00+00:00\n"
-"Language: \n"
+"Language: tr\n"
 
 msgid "plugins.generic.referenceVerify.displayName"
 msgstr "Kaynakça Doğrula (ReferenceVerify)"
 
 msgid "plugins.generic.referenceVerify.description"
-msgstr "Gönderi dosyasının kaynakçasını iş akışından doğrudan Kaynakça Doğrula ile kontrol edin. Dosya kısa ömürlü, şifreli ve tek kullanımlık bir aktarımla iletilir; kontrol editörün tarayıcısında çalışır, kalıcı olarak hiçbir şey saklanmaz."
+msgstr "Gönderi dosyasının kaynakçasını ve metin içi atıflarını editörlük iş akışından Kaynakça Doğrula ile denetleyin. Eklenti Kaynakça Doğrula'ya yalnız editör düğmelerinden birine bastığında bağlanır: seçilen dosya şifreli, tek kullanımlık bir aktarımla gönderilir (açılınca, en geç bir saat sonra silinir); hakem önerisi gönderinin başlığını, özetini ve yazar adlarını gönderir; “Sonucu al” gönderi numarasını gönderir. Editörün OJS'ye geri gönderdiği rapor özetleri alınana kadar en çok 7 gün tutulur. Kaynakça Doğrula hesabı ve eklenti anahtarı gerekir."
 
 msgid "plugins.generic.referenceVerify.tab"
 msgstr "Kaynakça Doğrula"
@@ -38,9 +38,6 @@ msgstr "Dosya"
 msgid "plugins.generic.referenceVerify.tab.stage"
 msgstr "Aşama"
 
-msgid "plugins.generic.referenceVerify.tab.check"
-msgstr "Kaynakça Doğrula ile kontrol et"
-
 msgid "plugins.generic.referenceVerify.tab.privacy"
 msgstr "Dosya şifreli gönderilir ve en çok bir saat tutulur; açıldığı anda silinir. Her bağlantı bir kez kullanılabilir."
 
@@ -60,31 +57,13 @@ msgid "plugins.generic.referenceVerify.stage.other"
 msgstr "Diğer"
 
 msgid "plugins.generic.referenceVerify.settings.description"
-msgstr "Kaynakça Doğrula'nın derginiz için verdiği eklenti anahtarını girin. Anahtar yalnız bu OJS kurulumundan dosya aktarmak için kullanılır."
+msgstr "Kaynakça Doğrula'nın derginiz için verdiği eklenti anahtarını girin. Eklenti Kaynakça Doğrula'ya yalnız editör Kaynakça Doğrula panelinde bir düğmeye bastığında bağlanır: seçilen dosyayı aktarmak, rapor özetlerini almak (yalnız gönderi numarası) ya da hakem önermek (başlık, özet ve yazar adları) için. İş akışı açıldığında hiçbir şey gönderilmez."
 
 msgid "plugins.generic.referenceVerify.settings.apiKey"
 msgstr "Eklenti anahtarı"
 
 msgid "plugins.generic.referenceVerify.settings.apiKeyInvalid"
 msgstr "Geçerli bir eklenti anahtarı girin (rvojs_ ile başlar)."
-
-msgid "plugins.generic.referenceVerify.settings.tool"
-msgstr "Açılacak araç"
-
-msgid "plugins.generic.referenceVerify.settings.tool.bibliography"
-msgstr "Kaynakça kontrolü (künyeler akademik kayıtlarla)"
-
-msgid "plugins.generic.referenceVerify.settings.tool.citation"
-msgstr "Atıf Doğrula (kaynaklar iddiaları destekliyor mu?)"
-
-msgid "plugins.generic.referenceVerify.settings.baseUrl"
-msgstr "Sunucu adresi (isteğe bağlı)"
-
-msgid "plugins.generic.referenceVerify.settings.baseUrlDescription"
-msgstr "Boş bırakın. Yalnız farklı bir Kaynakça Doğrula sunucusuyla test için, ör. http://localhost:3200"
-
-msgid "plugins.generic.referenceVerify.settings.baseUrlInvalid"
-msgstr "https://ornek.com biçiminde bir adres girin (yol olmadan)."
 
 msgid "plugins.generic.referenceVerify.settings.invalid"
 msgstr "Geçersiz değer."
@@ -205,15 +184,6 @@ msgstr "{$count} rapor özeti bekliyor. Gönderinin tartışmalarına eklemek i�
 
 msgid "plugins.generic.referenceVerify.tab.pendingFile"
 msgstr "Özet bekliyor"
-
-msgid "plugins.generic.referenceVerify.tab.autoWritten"
-msgstr "{$count} rapor özeti tartışmalara otomatik olarak eklendi."
-
-msgid "plugins.generic.referenceVerify.settings.autoPullTitle"
-msgstr "Bekleyen özetler"
-
-msgid "plugins.generic.referenceVerify.settings.autoPull"
-msgstr "İş akışındaki Kaynakça Doğrula sekmesi açıldığında bekleyen özetleri tartışmaya otomatik ekle (kapalıyken sekmede uyarı görünür ve «Sonucu al» ile eklenir)"
 
 msgid "plugins.generic.referenceVerify.tab.checkBib"
 msgstr "Kaynakça kontrolü"

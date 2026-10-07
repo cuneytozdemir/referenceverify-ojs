@@ -1,67 +1,75 @@
-# ReferenceVerify (Kaynakça Doğrula) — OJS 3.4 / 3.5 plugin
+# ReferenceVerify plugin for OJS
 
-Check the references and in-text citations of a submission file with ReferenceVerify directly from the OJS
-editorial workflow.
+Check the references and in-text citations of a submission file with [ReferenceVerify](https://referenceverify.com/)
+directly from the OJS editorial workflow: fabricated or mismatched references, retracted works, in-text citations
+missing from the reference list (and the other way round), and whether cited sources support the claims made.
 
-**Compatibility:** OJS 3.5.0.x (tested on 3.5.0.4 and 3.5.0.5) and OJS 3.4.0.x. PHP 8.0 or later (tested on PHP 8.3),
-PHP cURL with HTTPS, outbound HTTPS access to referenceverify.com / kaynakcadogrula.com. For OJS 3.3 use the
-separate `referenceVerify-1.x.tar.gz` package. Uploading a plugin package requires the **site administrator** role.
+This branch is the **OJS 3.4 / 3.5** version. For OJS 3.3 use the `stable-3_3_0` branch.
+
+**Requirements:** OJS 3.5.0.x or 3.4.0.x, PHP 8.0 or later with cURL, outbound HTTPS access to referenceverify.com and
+kaynakcadogrula.com, and a ReferenceVerify account with a plugin key for your journal
+([request one](https://referenceverify.com/ojs-plugin); editors get a free trial).
 
 ## Where it appears
 
-- **OJS 3.5:** open a submission from the editorial dashboard; the workflow side menu has a **ReferenceVerify** item
-  (below Publication), with the number of waiting report summaries in brackets. OJS 3.5 replaced the workflow page
-  with a new interface that no longer allows plugin tabs; the side-menu item uses the extension point PKP provides
-  for this.
-- **OJS 3.4:** a **ReferenceVerify** tab in the submission workflow, as in the OJS 3.3 plugin.
+- **OJS 3.5:** open a submission from the editorial dashboard; the workflow side menu has a **ReferenceVerify** item.
+- **OJS 3.4:** a **ReferenceVerify** tab in the submission workflow.
 
 It is shown to journal managers/editors, section editors (only on submissions assigned to them) and the site
 administrator. Authors, reviewers and assistants do not see it.
 
 ## How it works
 
-1. The panel lists the manuscript files of the submission: submission, review round, revisions, copyediting and
-   production/proof files. Reviewer attachments, discussion files and galley images are not listed. Each Word
-   (.docx, .doc), PDF or RTF file has three buttons: **Reference check**, **In-text citations** and
-   **Consolidated report**; other types (e.g. .odt) are shown as "not supported".
-2. OJS sends that file server-to-server (HTTPS, with your journal's plugin key) to ReferenceVerify as an encrypted,
-   single-use transfer (up to 50 MB), kept for at most one hour and deleted when opened.
-3. A new browser tab opens on ReferenceVerify with the file loaded, in the language of the editor's OJS interface
-   (Turkish → kaynakcadogrula.com, any other language → referenceverify.com). The editor needs a ReferenceVerify
-   account. Nothing is stored permanently.
-4. **Report summaries.** If the editor clicks **Send summary to OJS** under a finished report, **Get results** in the
-   panel adds it to the submission as a discussion among the assigned editors (a report the editor chose to share
-   with the author also includes the submission's authors). Participants get an OJS notification. With the setting
-   "Add waiting summaries automatically" they are added as soon as the panel is opened.
-5. **Reviewer suggestions.** **Show reviewer suggestions** lists researchers who published on the submission's topic,
-   with ORCID, institution and conflict-of-interest flags (co-author, same institution, retracted work). Nobody is
-   assigned automatically. The ReferenceVerify account linked to the key must have editor tools.
+1. The panel lists the manuscript files of the submission (submission, review, revision, copyediting and production
+   files). Each Word (.docx, .doc), PDF or RTF file has three buttons: **Reference check**, **In-text citations** and
+   **Consolidated report**.
+2. The chosen file is sent server-to-server (HTTPS, with your journal's plugin key) as an encrypted, single-use
+   transfer of up to 50 MB, and a new browser tab opens the check on ReferenceVerify in the language of the editor's
+   OJS interface.
+3. **Report summaries.** Under a finished report the editor can click **Send summary to OJS**. Back in the panel,
+   **Get results** adds the summary to the submission as a discussion among the assigned editors. A report the editor
+   explicitly chose to share with the author also includes the submission's authors.
+4. **Reviewer suggestions.** **Show reviewer suggestions** lists researchers who have published on the submission's
+   topic, with ORCID, institution and conflict-of-interest flags. Nobody is assigned automatically.
+
+## Data sent to ReferenceVerify
+
+The plugin contacts ReferenceVerify **only when an editor clicks one of its buttons**. Opening the workflow sends
+nothing; on OJS 3.5, opening the ReferenceVerify panel asks how many report summaries are waiting (submission ID only).
+
+| Action | Data sent |
+|---|---|
+| Reference check / In-text citations / Consolidated report | the chosen file, its name, the submission and file IDs |
+| Get results | the submission ID |
+| Show reviewer suggestions | the submission's title, abstract and author names |
+
+Transferred files are kept for at most one hour and deleted as soon as they are opened. Report summaries an editor
+sends back to OJS are kept, encrypted, for at most 7 days until they are retrieved. Nothing is written to OJS
+automatically. See the [privacy policy](https://referenceverify.com/legal/privacy).
 
 ## Install
 
-1. OJS → Settings → Website → Plugins → **Upload A New Plugin** → choose `referenceVerify-ojs35-1.2.0.tar.gz`
-   (site administrator). To update an installed version use **Upgrade** in the plugin's row (settings are kept).
+1. **From the Plugin Gallery:** Settings → Website → Plugins → Plugin Gallery → **ReferenceVerify** → Install.
+   Or download the release package and use **Upload A New Plugin** (site administrator). To update an installed
+   version use **Upgrade** in the plugin's row; the key is kept.
 2. Enable **ReferenceVerify** under Installed Plugins → Generic Plugins.
-3. Click **Settings** next to the plugin and enter the **plugin key** (starts with `rvojs_`). Leave "Server address"
-   empty (only for testing). There is no language setting.
+3. Click **Settings** next to the plugin and enter the **plugin key** (starts with `rvojs_`).
 
-## Kurulum (Türkçe)
+For testing against another server the site administrator can add to `config.inc.php`:
 
-1. OJS → Ayarlar → Web Sitesi → Eklentiler → **Yeni Eklenti Yükle** → `referenceVerify-ojs35-1.2.0.tar.gz`
-   (OJS site yöneticisi yetkisi gerekir). Kurulu sürümü güncellemek için satırdaki **Yükselt**'i kullanın.
-2. Genel Eklentiler altında **Kaynakça Doğrula (ReferenceVerify)** eklentisini etkinleştirin.
-3. **Ayarlar**'a tıklayıp Kaynakça Doğrula'nın verdiği eklenti anahtarını (rvojs_ ile başlar) girin; sunucu adresini
-   boş bırakın.
-
-OJS 3.5'te gönderiyi editör panosundan açın: iş akışının sol menüsünde **Kaynakça Doğrula** öğesi vardır (bekleyen
-özet varsa yanında sayısı yazar). OJS 3.4'te iş akışında **Kaynakça Doğrula** sekmesi çıkar. Her Word/PDF dosyasının
-yanında **Kaynakça kontrolü**, **Metin içi atıf** ve **Birleşik rapor** düğmeleri vardır; kontrol yeni sekmede açılır.
-**Sonucu al** gönderilen rapor özetlerini gönderiye editörlerin gördüğü bir tartışma olarak ekler (yazarla paylaşılan
-rapor yazarı da kapsar). **Hakem önerilerini göster** ORCID, kurum ve çıkar çatışması işaretli adayları listeler.
+```ini
+[referenceverify]
+base_url = "https://test.example.org"
+```
 
 ## Changelog
 
-- **1.2.0** — First release for OJS 3.4 and 3.5 (same features and settings as the OJS 3.3 plugin 1.2.0). Three
-  report buttons per file; summaries shared with the author include the authors; the "tool" setting is gone.
+- **1.2.1** — Opening the workflow no longer contacts ReferenceVerify (on OJS 3.5 the waiting-summary count is asked
+  only when the panel is opened); summaries are written to OJS only with **Get results** (the "add automatically"
+  setting is gone); the server address can only be set in `config.inc.php`; the key is shown as a password field;
+  files over 50 MB are refused before sending; all data flows are described in the plugin description.
+- **1.2.0** — First release for OJS 3.4 and 3.5. Three report buttons per file; summaries shared with the author.
 
-License: GNU GPL v3.
+## License
+
+Copyright (c) 2026 Cüneyt Özdemir. Distributed under the GNU General Public License v3; see [LICENSE](LICENSE).

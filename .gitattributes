@@ -1,4 +1,6 @@
+* text=auto eol=lf
+*.tar.gz binary
 tools/ export-ignore
 .gitattributes export-ignore
-dist/ export-ignore
 .gitignore export-ignore
+dist/ export-ignore
